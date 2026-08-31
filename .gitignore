@@ -1,0 +1,30 @@
+# Data & Storage
+data/
+models/
+*.parquet
+*.csv
+*.json
+*.crc
+*.log
+
+# Scala & SBT
+target/
+scala-pipeline/target/
+scala-pipeline/project/target/
+scala-pipeline/project/project/
+.sbt/
+.bloop/
+.metals/
+
+# Python & Notebooks
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+env/
+
+# IDE & OS
+.idea/
+.vscode/
+*.DS_Store
+Thumbs.db

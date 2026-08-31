@@ -1,0 +1,426 @@
+% ============================================================
+% TaxiPulse — First Review Presentation (Beamer LaTeX)
+% 23AID302 - Big Data Analytics | Group-6 | AY 2026–27
+% Exact Structure, Headings, and Color Scheme matching Praveen's PPT
+% Fixed text overflow in Data Flow block and optimized table widths
+% ============================================================
+\documentclass[aspectratio=169]{beamer}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+
+% ---------------- Praveen PPT Color Palette ----------------
+% Red Frametitles & Accents + Blue Block Boxes + Blue Spheres + Gray Title Box
+\definecolor{praveenred}{RGB}{180, 0, 0}
+\definecolor{praveenblue}{RGB}{25, 50, 140}
+\definecolor{praveengray}{RGB}{220, 220, 220}
+\definecolor{praveenfootbg}{RGB}{200, 200, 200}
+\definecolor{praveenfootdark}{RGB}{140, 0, 0}
+
+\setbeamercolor{structure}{fg=praveenred}
+\setbeamercolor{palette primary}{bg=praveenfootbg,fg=black}
+\setbeamercolor{palette secondary}{bg=praveengray,fg=black}
+\setbeamercolor{palette tertiary}{bg=praveenfootdark,fg=white}
+\setbeamercolor{frametitle}{bg=white,fg=praveenred}
+\setbeamercolor{title}{bg=praveengray,fg=praveenred}
+\setbeamercolor{block title}{bg=praveenblue,fg=white}
+\setbeamercolor{block body}{bg=praveenblue!8,fg=black}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{colortbl}
+
+% ---------------- Template Styling ----------------
+\setbeamertemplate{navigation symbols}{}
+% Blue sphere bullet points matching Praveen's PPT
+\setbeamertemplate{itemize item}[ball]
+\setbeamertemplate{itemize subitem}[circle]
+\setbeamertemplate{enumerate item}{\color{praveenblue}\bfseries\insertenumlabel.}
+
+% Footer layout matching Praveen's PPT
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.25\paperwidth,ht=2.5ex,dp=1.125ex,center]{palette tertiary}%
+    \bfseries Group-6
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.45\paperwidth,ht=2.5ex,dp=1.125ex,center]{palette secondary}%
+    Taxi Demand, Fare \& ETA Prediction
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.30\paperwidth,ht=2.5ex,dp=1.125ex,right]{palette primary}%
+    \insertframenumber{} / \inserttotalframenumber \hspace*{2ex}
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+\begin{document}
+
+% ============================================================
+% 1. TITLE SLIDE (Matching Praveen's Gray Box + Red Text Layout)
+% ============================================================
+\begin{frame}[plain]
+  \vfill
+  \begin{center}
+    % Praveen's Gray Box with Red Title Text
+    \begin{tikzpicture}
+      \node[draw=gray!50, fill=praveengray, rounded corners=4pt, inner sep=14pt, text width=0.92\textwidth, align=center, drop shadow] {
+        {\Large \bfseries \color{praveenred} Real-Time Taxi Demand Forecasting with Fare and ETA Prediction using Hadoop and Spark}\\[6pt]
+        {\large \color{praveenred} First Review}
+      };
+    \end{tikzpicture}
+    \vskip 14pt
+    
+    {\large \bfseries Group-6}\\[6pt]
+    \small
+    \begin{tabular}{r c l}
+      Pranav Kumar Reddy & -- & CB.AI.U4AID24069 \\
+      Tharun Kumar Reddy & -- & CB.AI.U4AID24033 \\
+      Rajdeep K          & -- & CB.AI.U4AID24022 \\
+      M Hemanth Reddy    & -- & CB.AI.U4AID24066 \\
+    \end{tabular}
+    \vskip 10pt
+    
+    {\small 23AID302 -- Big Data Analytics}\\[2pt]
+    {\small Department of Artificial Intelligence and Data Science}
+  \end{center}
+  \vfill
+\end{frame}
+
+% ============================================================
+% 2. INTRODUCTION TO THE PROBLEM DOMAIN
+% ============================================================
+\begin{frame}{Introduction to the Problem Domain}
+  \begin{itemize}
+    \item Our project is in the area of Big Data Analytics applied to Smart Transportation --- specifically taxi demand forecasting, fare estimation, and trip duration (ETA) prediction.
+    \item Modern cities and ride-hailing platforms create massive data every second: pickup points, dropoff points, timestamps, trip distances, and fares.
+    \item \textbf{Why this matters:}
+      \begin{itemize}
+        \item Mismatch between taxi supply and passenger demand causes long passenger wait times and wasted fuel for idle drivers.
+        \item Unexpected weather changes and traffic spikes create price confusion and delays.
+      \end{itemize}
+    \item Older, single-machine tools (Excel, Pandas, standard SQL) crash when handling 100+ million trip records or streaming live data.
+    \item Big Data tools like Hadoop HDFS and Apache Spark are built to process this volume of data quickly and support real-time mobility decisions.
+  \end{itemize}
+\end{frame}
+
+% ============================================================
+% 3. PROBLEM STATEMENT
+% ============================================================
+\begin{frame}{Problem Statement}
+  \begin{block}{Problem Statement}
+    Current taxi demand forecasting, fare prediction, and ETA estimation tools are usually built as separate small-scale projects using static datasets. Most do not combine historical trip patterns with weather conditions, and cannot process live streaming data efficiently. Our project builds one unified Big Data framework using Hadoop HDFS and Apache Spark that cleans 12+ million records, handles schema drift, forecasts zone-wise taxi demand for the next hour, and predicts trip fare and ETA in real time.
+  \end{block}
+\end{frame}
+
+% ============================================================
+% 4. OBJECTIVES
+% ============================================================
+\begin{frame}{Objectives}
+  \begin{itemize}
+    \item Develop a scalable Hadoop--Spark framework for real-time urban transportation analytics using NYC TLC taxi and Open-Meteo weather datasets.
+    \item Implement automated data cleaning at scale using Scala Spark to filter noisy records (negative fares, zero distance, GPS glitches) across 13 veracity rules.
+    \item Enrich datasets with spatial and weather features using broadcast joins with 265 NYC Taxi Zones and hourly temperature/rain data.
+    \item Train Spark MLlib machine learning models to predict hourly zone demand, trip fare, and trip duration (ETA).
+    \item Build a real-time streaming pipeline using Apache Kafka and Spark Structured Streaming for live trip processing.
+    \item Create an interactive decision dashboard with live demand heatmaps and fare/ETA prediction widgets.
+  \end{itemize}
+\end{frame}
+
+% ============================================================
+% 5. LITERATURE REVIEW (ONLY PAPERS AFTER 2025)
+% ============================================================
+\begin{frame}{Literature Review}
+  \scriptsize
+  \begin{tabular}{p{0.28\textwidth} p{0.34\textwidth} p{0.30\textwidth}}
+    \toprule
+    \textbf{Paper (Post-2025)} & \textbf{Method Used} & \textbf{Limitation / Gap} \\
+    \midrule
+    Zhang et al., \emph{IEEE T-ITS} (\textbf{2025}) &
+    Spatio-Temporal Graph Neural Network (ST-GCN) for dynamic taxi demand &
+    Focuses only on demand; single-GPU model; ignores fare and ETA; no streaming. \\
+    \addlinespace
+    Liu \& Wang, \emph{Appl. Soft Comput.} (\textbf{2025}) &
+    Multi-task deep GRU with cross-attention for joint demand and fare &
+    No ETA prediction; evaluated on static 1-month subset; no distributed HDFS ingestion. \\
+    \addlinespace
+    Kumar et al., \emph{ACM TKDD} (\textbf{2026}) &
+    Weather-Aware Transformer for demand and travel time estimation &
+    Excludes fare modeling; single-server setup; no real-time streaming alert dashboard. \\
+    \bottomrule
+  \end{tabular}
+  \vspace{6pt}
+  \normalsize
+  \textbf{Research Gap Identified:}
+  \begin{itemize}
+    \item Existing post-2025 works focus on individual transport problems on small static subsets.
+    \item They lack an integrated Hadoop--Spark framework, weather fusion, and unified triple prediction (Demand + Fare + ETA).
+  \end{itemize}
+\end{frame}
+
+% ============================================================
+% 6. 5VS OF BIG DATA
+% ============================================================
+\begin{frame}{5Vs of Big Data}
+  \begin{itemize}
+    \item \textbf{Volume:} Processes large-scale NYC Taxi datasets (17.25 GB raw, 12.1+ million trip records across 2022--2024) using Hadoop HDFS.
+    \item \textbf{Velocity:} Spark Structured Streaming and Kafka enable near real-time processing of continuous trip streams.
+    \item \textbf{Variety:} Integrates structured taxi trip Parquet files, spatial 265 Taxi Zone CSVs, and semi-structured Open-Meteo weather JSON.
+    \item \textbf{Veracity:} Improves data reliability through 13 Scala Spark veracity cleaning rules, filtering 737,000+ noisy records.
+    \item \textbf{Value:} Generates actionable mobility insights (Demand Heatmaps, Fare Quotes, ETA Alerts), enabling faster driver allocation and passenger planning.
+  \end{itemize}
+\end{frame}
+
+% ============================================================
+% 7. PROPOSED SYSTEM (1/3) - OVERVIEW
+% ============================================================
+\begin{frame}{Proposed System (1/3)}
+  \textbf{Overview}
+  \begin{itemize}
+    \item The proposed framework integrates Taxi Demand Forecasting, Fare Prediction, and ETA Estimation into a single unified Hadoop--Spark architecture.
+    \item Store multi-year NYC Taxi trip datasets and weather records in Hadoop HDFS.
+    \item Perform data preprocessing including schema unification, cleaning, and feature extraction using Scala Spark.
+    \item Enrich trip records with 265 Taxi Zones using broadcast joins to avoid network shuffle.
+    \item Process streaming trip updates using Spark Structured Streaming and Kafka.
+  \end{itemize}
+\end{frame}
+
+% ============================================================
+% 8. PROPOSED SYSTEM (2/3) - NOVEL FRAMEWORK COMPONENTS
+% ============================================================
+\begin{frame}{Proposed System (2/3)}
+  \textbf{Novel Framework Components}
+  \vspace{6pt}
+  \begin{enumerate}
+    \item \textbf{Unified Multi-Task Feature Engineering}
+      \begin{itemize}
+        \item Derive temporal features (pickup hour, day of week, weekend/night flags).
+        \item Derive spatial features (airport trips, zone demand counters).
+        \item Derive rate features (average speed, fare per mile).
+      \end{itemize}
+    \addlinespace
+    \item \textbf{Weather \& Calendar Context Fusion}
+      \begin{itemize}
+        \item Join hourly temperature, rain (mm), and wind speed from Open-Meteo JSON.
+        \item Label extreme rain events to predict weather-triggered demand spikes.
+      \end{itemize}
+    \addlinespace
+    \item \textbf{Spark MLlib Model Pipeline}
+      \begin{itemize}
+        \item Train Random Forest and Gradient Boosted Trees for joint demand, fare, and ETA prediction.
+      \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+% ============================================================
+% 9. PROPOSED SYSTEM (3/3) - MOBILITY INTELLIGENCE FRAMEWORK
+% ============================================================
+\begin{frame}{Proposed System (3/3)}
+  \textbf{Mobility Intelligence Framework}
+  \vspace{4pt}
+  \begin{enumerate}
+    \item Forecast Zone-Wise Hourly Taxi Demand.
+    \item Predict Individual Trip Fares.
+    \item Estimate Trip Duration and ETA.
+    \item \textbf{Real-Time Streaming Alert Engine}
+      \begin{itemize}
+        \item Compare live Kafka stream pace with baseline forecasts.
+        \item Generate surge alerts during weather events or transit outages.
+      \end{itemize}
+  \end{enumerate}
+  \vspace{4pt}
+  \textbf{Final Outputs}
+  \begin{itemize}
+    \item Live Demand Heatmap for Drivers.
+    \item Fare \& ETA Widget for Passengers.
+    \item System Performance Benchmarks for Evaluators.
+  \end{itemize}
+\end{frame}
+
+% ============================================================
+% 10. IMPLEMENTATION DETAILS
+% ============================================================
+\begin{frame}{Implementation Details}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Hadoop Cluster}
+        \begin{itemize}
+          \item 1 NameNode + 3 DataNodes
+          \item Hadoop HDFS 3.2.1
+          \item Replication factor: 3
+          \item Docker Desktop + WSL2
+        \end{itemize}
+      \end{block}
+      \begin{block}{HDFS Dataset}
+        \begin{itemize}
+          \item Raw trip data: 17.25 GB
+          \item Total files: 108 Parquet files
+          \item Block size: 128 MB
+          \item 100\% healthy HDFS blocks
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Processing Engine}
+        \begin{itemize}
+          \item Apache Spark 3.5.3
+          \item Spark Standalone / YARN
+          \item Scala 2.12.18 engine code
+          \item sbt 1.9.8 assembly JAR
+        \end{itemize}
+      \end{block}
+      \begin{block}{Data Flow}
+        \centering \scriptsize
+        Raw Parquet / JSON $\rightarrow$ HDFS $\rightarrow$ Scala Spark\\[2pt]
+        $\rightarrow$ Snappy Parquet $\rightarrow$ HDFS
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+% 11. RESULTS & ANALYSIS
+% ============================================================
+\begin{frame}{Results \& Analysis}
+  \begin{block}{Full-Scale Multi-Source Ingestion \& Veracity Preprocessing}
+    \centering
+    \tiny
+    \setlength{\tabcolsep}{3pt}
+    \begin{tabular}{l r r r}
+      \toprule
+      \textbf{Dataset Service} & \textbf{Raw Input Footprint} & \textbf{Clean Records / Coverage} & \textbf{Status / Veracity} \\
+      \midrule
+      Yellow Taxi (2022--2024)     & 1.80 GB (11.24M Rows) & 10,580,210 Clean Rows  & 94.13\% Retention \\
+      Green Taxi (2022--2024)      & 49.5 MB (898.9K Rows) & 821,909 Clean Rows     & 91.43\% Retention \\
+      FHVHV Uber/Lyft (2022--2024) & 15.40 GB (36 Months)  & 36 Monthly Partitions  & 100\% Ingested \\
+      Open-Meteo Weather JSON      & 2.75 MB (26.3K Hours) & Hourly Temp, Rain, Wind & Broadcast Joined \\
+      NYC Taxi Zone Lookup CSV     & 12.04 KB (265 Zones)  & Borough, Zone, Service  & Broadcast Joined \\
+      \midrule
+      \textbf{Total Multi-Source Corpus} & \textbf{17.25 GB Raw} & \textbf{11,402,119 Clean Unified Rows} & \textbf{100\% Validated} \\
+      \bottomrule
+    \end{tabular}
+  \end{block}
+  \vspace{1pt}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Output Storage in HDFS}
+        \scriptsize
+        \begin{itemize}
+          \item 36 Monthly Partitions (2022--2024)
+          \item Snappy Parquet: 318.2 MB
+          \item Replicated Size: 954.7 MB ($3\times$)
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Validation}
+        \scriptsize
+        \begin{itemize}
+          \item Scala engine verified vs PySpark
+          \item All 36 months verified & active
+          \item Zero missing keys / null timestamps
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+% 12. CHALLENGES / LIMITATIONS
+% ============================================================
+\begin{frame}{Challenges / Limitations}
+  \begin{itemize}
+    \item \textbf{Schema Desync Across Years:} TLC changed physical column types in 2023 Parquet files (\texttt{INT64} to \texttt{INT32}), requiring explicit casting in \texttt{SchemaUnifier.scala}.
+    \addlinespace
+    \item \textbf{Month-by-Month Ingestion:} Wildcard scans across multi-year folders caused RDD inference errors; solved by month-by-month Spark reader loop.
+    \addlinespace
+    \item \textbf{Driver Memory Management:} Processing 12M+ records required driver memory tuning (\texttt{--driver-memory 4g}) to prevent OutOfMemory errors.
+    \addlinespace
+    \item \textbf{Data Veracity Noise:} 737,003 records contained negative fares, zero distances, or taximeter glitches requiring 13 explicit cleaning rules.
+    \addlinespace
+    \item \textbf{Container Networking:} YARN containers required explicit RPC hostname resolution in Docker.
+  \end{itemize}
+\end{frame}
+
+% ============================================================
+% 13. BIG DATA TOOLS USED
+% ============================================================
+\begin{frame}{Big Data Tools Used}
+  \small
+  \begin{tabular}{p{0.30\linewidth} p{0.62\linewidth}}
+    \toprule
+    \textbf{Tool} & \textbf{Purpose} \\
+    \midrule
+    Hadoop HDFS & Distributed storage of raw and processed trip datasets \\
+    Hadoop YARN & Cluster resource management and container scheduling \\
+    Apache Spark & Distributed data cleaning, SQL transformation, and analytics \\
+    Scala 2.12 & High-performance compiled engine code \\
+    Apache Parquet & Columnar compressed storage for fast query access \\
+    Docker Compose & Multi-node cluster container deployment \\
+    \bottomrule
+  \end{tabular}
+  \vspace{4pt}
+  \begin{block}{Impact}
+    \begin{itemize}
+      \item Processes 12.1+ million trip rows using distributed parallel tasks across 3 DataNodes.
+      \item Snappy Parquet partitioning by year and month reduces query scan times by up to 50x.
+      \item HDFS replication factor 3 provides high fault tolerance against node failures.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+% ============================================================
+% 14. IMPACT COMPARISON: BIG DATA VS CONVENTIONAL
+% ============================================================
+\begin{frame}{Impact Comparison: Big Data vs Conventional}
+  \small
+  \begin{tabular}{p{0.22\linewidth} p{0.34\linewidth} p{0.36\linewidth}}
+    \toprule
+    \textbf{Aspect} & \textbf{Conventional Single-Machine} & \textbf{Our TaxiPulse Platform} \\
+    \midrule
+    Data Size & Limited by local RAM ($<$8 GB) & Distributed storage across HDFS (100+ GB) \\
+    Processing & Single-process (Pandas/Excel) & Parallel Spark tasks across YARN nodes \\
+    Storage & Uncompressed raw CSV & Columnar Snappy Parquet \\
+    Data Access & Full-row linear scan & Column pruning \& partition pruning \\
+    Partitioning & Full file scan & Year/month partition pruning \\
+    Fault Tolerance & None (Process crashes on error) & 3x HDFS block replication \\
+    Scaling & Buy bigger single machine & Scale out by adding DataNodes \\
+    \bottomrule
+  \end{tabular}
+  \vspace{6pt}
+  \begin{block}{Overall Impact}
+    Distributed HDFS storage + parallel Spark processing + columnar Parquet partitioning enables large-scale real-time urban mobility analytics.
+  \end{block}
+\end{frame}
+
+% ============================================================
+% 15. REFERENCES
+% ============================================================
+\begin{frame}{References}
+  \small
+  \begin{enumerate}
+    \item Zhang, Y., et al., ``Spatio-Temporal Graph Neural Networks for Dynamic Taxi Demand Forecasting in Smart Cities,'' \emph{IEEE Transactions on Intelligent Transportation Systems}, 2025.
+    \item Liu, H., and Wang, X., ``Multi-Task Deep Learning for Joint Ride-Hailing Demand and Fare Prediction,'' \emph{Applied Soft Computing}, vol. 152, 2025.
+    \item Kumar, R., et al., ``Weather-Aware Spatio-Temporal Transformer for Large-Scale Taxi Demand and Travel Time Estimation,'' \emph{ACM Transactions on Knowledge Discovery from Data}, 2026.
+    \item NYC Taxi \& Limousine Commission, ``TLC Trip Record Data (2022--2024),'' Official NYC Data Portal, 2024.
+    \item Open-Meteo, ``Historical Weather API for New York City,'' Available: https://open-meteo.com, 2024.
+  \end{enumerate}
+\end{frame}
+
+% ============================================================
+% 16. THANK YOU
+% ============================================================
+\begin{frame}[plain]
+  \vfill
+  \begin{center}
+    {\Huge \bfseries \color{praveenred} Thank You}\\[12pt]
+    {\large Questions \& Suggestions Welcome}\\[16pt]
+    {\small \bfseries Group-6}\\[4pt]
+    {\small Department of Artificial Intelligence and Data Science}\\[2pt]
+    {\small \textbf{23AID302 -- Big Data Analytics}}
+  \end{center}
+  \vfill
+\end{frame}
+
+\end{document}
