@@ -6,7 +6,7 @@ TaxiPulse unifies, cleans, enriches, and processes multi-year NYC Taxi and Ride-
 
 ---
 
-## 🏗 Architecture Overview
+## Architecture Overview
 
 ```
 +-----------------------------------------------------------------------------------+
@@ -32,7 +32,7 @@ TaxiPulse unifies, cleans, enriches, and processes multi-year NYC Taxi and Ride-
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 TaxiPulse_Bigdata/
@@ -62,7 +62,7 @@ TaxiPulse_Bigdata/
 
 ---
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 ### 1. Start the Distributed Cluster (Docker)
 ```bash
@@ -96,7 +96,7 @@ docker exec spark-client bash -c "/opt/spark/bin/spark-submit \
 
 ---
 
-## 📊 Pipeline Stages & Transformations
+## Pipeline Stages & Transformations
 
 1. **Ingestion & Schema Unification**: Standardizes disparate vendor schemas (tpep, lpep, fhvhv) into a single canonical schema (`pickup_ts`, `dropoff_ts`, `pu_location_id`, `do_location_id`, `fare_amount`, `trip_distance`).
 2. **Data Veracity Cleaning**: Filters out invalid coordinates outside NYC, negative fares, impossible timestamps, zero distances, and speed outliers.
@@ -108,7 +108,7 @@ docker exec spark-client bash -c "/opt/spark/bin/spark-submit \
 
 ---
 
-## 🖥 Cluster Web Interfaces
+## Cluster Web Interfaces
 
 * **Hadoop NameNode UI**: `http://localhost:9870`
 * **YARN ResourceManager UI**: `http://localhost:8088`
@@ -116,5 +116,5 @@ docker exec spark-client bash -c "/opt/spark/bin/spark-submit \
 
 ---
 
-## 📜 License
+## License
 This project is licensed under the Apache License 2.0.
