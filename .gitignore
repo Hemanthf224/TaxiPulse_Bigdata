@@ -28,3 +28,14 @@ env/
 .vscode/
 *.DS_Store
 Thumbs.db
+
+# Presentations, PDFs, TeX, and Images
+*.pdf
+*.ppt
+*.pptx
+*.key
+*.tex
+*.png
+*.jpg
+*.jpeg
+
