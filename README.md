@@ -1,69 +1,58 @@
-<div align="center">
-  <h1>🚖 TaxiPulse</h1>
-  <p><b>Big Data Scalable Taxi Demand & Analytics Pipeline</b></p>
+# TaxiPulse: Big Data Scalable Taxi Demand & Analytics Pipeline
 
-  [![Scala](https://img.shields.io/badge/Scala-2.12-red?style=for-the-badge&logo=scala)](https://www.scala-lang.org/)
-  [![Apache Spark](https://img.shields.io/badge/Apache%20Spark-3.5.1-E25A1C?style=for-the-badge&logo=apachespark)](https://spark.apache.org/)
-  [![Hadoop YARN](https://img.shields.io/badge/Hadoop%20YARN-3.3.6-FFD600?style=for-the-badge&logo=apachehadoop)](https://hadoop.apache.org/)
-  [![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-Streaming-231F20?style=for-the-badge&logo=apachekafka)](https://kafka.apache.org/)
-  [![React](https://img.shields.io/badge/React-Vite-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
-</div>
+## Overview
 
----
-
-## 📖 Overview
-
-**TaxiPulse** is a distributed, high-performance Big Data analytics pipeline designed to process **massive-scale** transportation datasets. Built entirely on **Apache Spark (Scala)** and running on a multi-node **Hadoop YARN** cluster, this architecture seamlessly handles over **16.8 GB (150+ Million rows)** of data.
+TaxiPulse is a distributed, high-performance Big Data analytics pipeline designed to process massive-scale transportation datasets. Built entirely on Apache Spark (Scala) and running on a multi-node Hadoop YARN cluster, this architecture seamlessly handles over 16.8 GB (150+ Million rows) of data.
 
 The pipeline unifies, cleans, and enriches multi-year NYC Taxi and Ride-hailing datasets (Yellow Taxi, Green Taxi, FHVHV / Uber & Lyft), fusing them with live Kafka streams, hourly meteorological weather data, and geographical zone lookups.
 
 ---
 
-## 🏗️ Architecture Design
+## Architecture Design
 
 ```text
 +-----------------------------------------------------------------------------------+
 |                                 TaxiPulse Core Pipeline                           |
 +-----------------------------------------------------------------------------------+
-|  🌐 Web Dashboard:      React + Vite + Recharts (Live Visualization)              |
-|  📡 Streaming Layer:    Apache Kafka (Real-time Trip Ingestion)                   |
-|  🧠 Processing Engine:  Apache Spark 3.x (Scala DataFrames & SparkML)             |
-|  ⚙️ Resource Manager:   Hadoop YARN (ResourceManager + 3 NodeManagers)            |
-|  🗄️ Storage Layer:      Hadoop HDFS (Replication Factor = 3)                      |
+|  Web Dashboard:         React + Vite + Recharts (Live Visualization)              |
+|  Streaming Layer:       Apache Kafka (Real-time Trip Ingestion)                   |
+|  Processing Engine:     Apache Spark 3.x (Scala DataFrames & SparkML)             |
+|  Resource Manager:      Hadoop YARN (ResourceManager + 3 NodeManagers)            |
+|  Storage Layer:         Hadoop HDFS (Replication Factor = 3)                      |
 +-----------------------------------------------------------------------------------+
 ```
 
-### 🔹 Core Components
+### Core Components
 * **Hadoop HDFS**: Stores multi-gigabyte raw input trip files and partitioned Snappy Parquet outputs across distributed DataNodes.
 * **Hadoop YARN**: Handles dynamic resource allocation, memory management, and distributed executor scheduling (configured for high-memory 3GB executors).
 * **Apache Spark & SparkML (Scala)**: Performs schema unification, executes 13 veracity cleaning rules, spatial/temporal feature engineering, and trains deep Gradient Boosted Trees (GBTs) for demand prediction.
 * **Apache Kafka**: Simulates real-time live trip ingestion streams.
 
-### 📊 Data Sources
-* 🚖 **Yellow & Green Taxi Parquet Datasets** (2022–2024)
-* 📱 **FHVHV High-Volume For-Hire Vehicle Datasets** (Uber/Lyft)
-* 🌦️ **Open-Meteo Weather JSON Dataset**
-* 🗺️ **NYC Taxi Zone Lookup CSV**
+### Data Sources
+* Yellow & Green Taxi Parquet Datasets (2022–2024)
+* FHVHV High-Volume For-Hire Vehicle Datasets (Uber/Lyft)
+* Open-Meteo Weather JSON Dataset
+* NYC Taxi Zone Lookup CSV
 
 ---
 
-## 🚀 Pipeline Stages & Transformations
+## Pipeline Stages & Transformations
 
-1. **Ingestion & Schema Unification**: Standardizes disparate vendor schemas (`tpep`, `lpep`, `fhvhv`) into a single canonical schema.
+1. **Ingestion & Schema Unification**: Standardizes disparate vendor schemas (tpep, lpep, fhvhv) into a single canonical schema.
 2. **Data Veracity Cleaning**: Filters out invalid coordinates outside NYC, negative fares, impossible timestamps, zero distances, and speed outliers.
 3. **Spatial & Temporal Enrichment**:
-   - *Zone Lookup*: Broadcast joins to resolve location IDs to NYC Boroughs.
-   - *Weather Integration*: Temporal joins with hourly temperature, precipitation, and conditions.
+   - Zone Lookup: Broadcast joins to resolve location IDs to NYC Boroughs.
+   - Weather Integration: Temporal joins with hourly temperature, precipitation, and conditions.
 4. **Feature Engineering**: Computes Haversine distance, trip duration, average speed (mph), fare rate per mile, and time features (day of week, peak hours).
-5. **Machine Learning Model**: Trains scalable SparkML Pipelines using `VectorAssembler` and `GBTRegressor` to predict fare amounts and trip durations.
-6. **Partitioned HDFS Output**: Writes ultra-compressed Snappy Parquet files partitioned by `pickup_year` and `pickup_month`.
+5. **Machine Learning Model**: Trains scalable SparkML Pipelines using VectorAssembler and GBTRegressor to predict fare amounts and trip durations.
+6. **Partitioned HDFS Output**: Writes ultra-compressed Snappy Parquet files partitioned by pickup_year and pickup_month.
 
 ---
 
-## 💻 Quick Start Guide
+## Quick Start Guide
 
 ### 1. Start the Distributed Cluster
-*Brings up the HDFS NameNode, DataNodes, YARN ResourceManager, Kafka broker, and Spark Client via Docker Compose.*
+Brings up the HDFS NameNode, DataNodes, YARN ResourceManager, Kafka broker, and Spark Client via Docker Compose.
 ```bash
 docker-compose -f docker/docker-compose.yml up -d
 ```
@@ -103,20 +92,14 @@ npm run dev
 
 ---
 
-## 🌍 Cluster Web Interfaces
+## Cluster Web Interfaces
 
-* 🐘 **Hadoop NameNode UI**: `http://localhost:9870`
-* ⚙️ **YARN ResourceManager UI**: `http://localhost:8088`
-* ✨ **Spark Application UI**: `http://localhost:4040`
-* 📈 **TaxiPulse Dashboard**: `http://localhost:5173`
+* Hadoop NameNode UI: http://localhost:9870
+* YARN ResourceManager UI: http://localhost:8088
+* Spark Application UI: http://localhost:4040
+* TaxiPulse Dashboard: http://localhost:5173
 
 ---
 
-## 📜 License
+## License
 This project is licensed under the Apache License 2.0.
-
----
-
-## 👥 Contributors
-* **M. Hemanth Reddy** (Lead Developer)
-* **Pranav Kumar Reddy** ([@pranav2007kumar](https://github.com/pranav2007kumar))
