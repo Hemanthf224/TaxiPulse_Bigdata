@@ -14,22 +14,27 @@ object PreprocessJob {
     val years = Seq("2022", "2023", "2024")
     val months = (1 to 12).map(m => f"$m%02d")
 
+    import org.apache.hadoop.fs.{FileSystem, Path}
+    val fs = FileSystem.get(new java.net.URI(basePath), spark.sparkContext.hadoopConfiguration)
+
     var unifiedDfs = Seq[DataFrame]()
 
     for (y <- years; m <- months) {
-      val monthPath = s"$basePath/year=$y/month=$m/*.parquet"
-      try {
-        var monthRaw = spark.read.parquet(monthPath)
-        if (sample && !monthRaw.isEmpty) {
-          monthRaw = monthRaw.sample(sampleRate)
+      val monthPath = new Path(s"$basePath/year=$y/month=$m")
+      if (fs.exists(monthPath)) {
+        try {
+          var monthRaw = spark.read.parquet(monthPath.toString)
+          if (sample && !monthRaw.isEmpty) {
+            monthRaw = monthRaw.sample(sampleRate)
+          }
+          if (!monthRaw.isEmpty) {
+            val unified = SchemaUnifier.unify(monthRaw, serviceType)
+            unifiedDfs = unifiedDfs :+ unified
+          }
+        } catch {
+          case e: Exception =>
+            println(s"[INGESTION WARNING] Could not read $serviceType for year $y month $m: ${e.getMessage}")
         }
-        if (!monthRaw.isEmpty) {
-          val unified = SchemaUnifier.unify(monthRaw, serviceType)
-          unifiedDfs = unifiedDfs :+ unified
-        }
-      } catch {
-        case e: Exception =>
-          println(s"[INGESTION WARNING] Could not read $serviceType for year $y month $m: ${e.getMessage}")
       }
     }
 
@@ -51,18 +56,22 @@ object PreprocessJob {
     println(s"Sampling Mode:  ${config.sample} (Rate: ${config.sampleRate})")
     println("=" * 70)
 
-    val spark = SparkSession.builder()
+    val builder = SparkSession.builder()
       .appName("TaxiPulse-Preprocessing")
       .config("spark.sql.parquet.enableVectorizedReader", "false")
       .config("spark.sql.files.ignoreCorruptFiles", "true")
-      .getOrCreate()
+
+    if (!sys.props.contains("spark.master") && !sys.env.contains("MASTER")) {
+      builder.master("local[*]")
+    }
+    val spark = builder.getOrCreate()
 
     // 1. Read & Unify Raw Datasets month-by-month to guarantee all 36 months ingestion
     val yellowBasePath = s"${config.inputPath}/yellow"
     val greenBasePath = s"${config.inputPath}/green"
     val fhvhvBasePath = s"${config.inputPath}/fhvhv"
-    val zonePath = s"${config.referencePath}/zones/taxi_zone_lookup.csv"
-    val weatherPath = s"${config.referencePath}/weather/weather.json"
+    val zonePath = s"${config.referencePath}/taxi_zone_lookup.csv"
+    val weatherPath = s"${config.referencePath}/weather.json"
 
     println(s"[INGESTION] Reading and unifying raw Parquet trip datasets (Yellow, Green, FHVHV) month-by-month...")
 
@@ -112,7 +121,6 @@ object PreprocessJob {
     println(s"[HDFS WRITE] Writing processed Parquet dataset to $outputTripsPath...")
 
     finalFeaturedDf
-      .coalesce(4)
       .write
       .mode("overwrite")
       .partitionBy("pickup_year", "pickup_month")
