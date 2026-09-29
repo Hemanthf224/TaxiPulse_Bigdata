@@ -118,3 +118,8 @@ docker exec spark-client bash -c "/opt/spark/bin/spark-submit \
 
 ## License
 This project is licensed under the Apache License 2.0.
+
+---
+
+## Contributors
+* **Pranav Kumar Reddy** ([@pranav2007kumar](https://github.com/pranav2007kumar))
